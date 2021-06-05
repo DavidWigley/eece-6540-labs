@@ -1,0 +1,21 @@
+{
+  "nodes":
+  [
+    {
+      "name":"hello_world"
+      , "id":1360132536
+      , "type":"kernel"
+      , "children":
+      [
+        {
+          "name":"hello_world.B0"
+          , "id":1360330256
+          , "type":"bb"
+        }
+      ]
+    }
+  ]
+  , "links":
+  [
+  ]
+}
