@@ -83,12 +83,21 @@ static float B[24] = {
   2.0f,  2.0f,  2.0f,  2.0f, 2.0f, 2.0f};
 
 // declare matrix sizes
-static size_t wA=4;
-static size_t hA=2;
-static size_t wB=6;
-static size_t hB=4;
+//width is col
+//height is rows
+static size_t wA=400;
+static size_t hA=200;
+static size_t wB=600;
+static size_t hB=400;
 static size_t wC = wB;
 static size_t hC = hA;
+static size_t wD = wC;
+static size_t hD = hD;
+
+static const float A_VALUE = 1.0
+static const float B_VALUE = 2.0
+static const float D_VALUE = 3.0;
+
 
 // Entry point.
 int main(int argc, char **argv) {
@@ -106,9 +115,37 @@ int main(int argc, char **argv) {
   if(!init()) {
     return -1;
   }
+  
+  //Declare matrix A and set all the elements to A_VALUE
+  float *matrixA = (float *) calloc (hA * wA, sizeof(float));
+  for (int i = 0; i < hA*wA; i++)
+  {
+	  matrixA[i] = A_VALUE;
+  }
+  
+  //Declare matrix B and set all the elements to B_VALUE
+  float *matrixB = (float *) calloc (hB * wB, sizeof(float));
+  for (int i = 0; i < hB*wB; i++)
+  {
+	  matrixA[i] = B_VALUE;
+  }
+  
+  //Declare matrix D and set all the elements to D_VALUE
+  float *matrixD = (float *) calloc (hD * wD, sizeof(float));
+  for (int i = 0; i < hD*wD; i++)
+  {
+	  matrixA[i] = D_VALUE;
+  }
+  
 
   float *C = (float *)calloc (hC * wC ,  sizeof(float));
+  printf("C Values are: ");
   for (int i = 0; i < wC*hC; i++) {
+    //new line for clean formatting
+	  if (i % wC == 0)
+    {
+		  printf("\n");
+    }
     printf ("%f ", C[i]);
   }
   printf("\n");
@@ -123,18 +160,25 @@ int main(int argc, char **argv) {
           wA*hA*sizeof(float), NULL, &ret);
   // copy Matrix A to the device 
   clEnqueueWriteBuffer(queue, bufferA, CL_TRUE, 0,
-          wA*hA*sizeof(float), (void *)A, 0, NULL, NULL);
+          wA*hA*sizeof(float), (void *)matrixA, 0, NULL, NULL);
 
   // allocate space for Matrix B on the device 
   cl_mem bufferB = clCreateBuffer(context, CL_MEM_READ_ONLY,
           wB*hB*sizeof(float), NULL, &ret);
   // copy Matrix B to the device 
   clEnqueueWriteBuffer(queue, bufferB, CL_TRUE, 0,
-          wB*hB*sizeof(float), (void *)B, 0, NULL, NULL);
+          wB*hB*sizeof(float), (void *)matrixB, 0, NULL, NULL);
 
   // allocate space for Matrix C on the device 
   cl_mem bufferC = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
           wC*hC*sizeof(float), NULL, &ret);
+		  
+  // allocate space for Matrix D on the device
+  cl_mem bufferD = clCreateBuffer(context, CL_MEM_READ_ONLY,
+          wD*hD*sizeof(float), NULL, &ret);
+  // copy Matrix B to the device 
+  clEnqueueWriteBuffer(queue, bufferD, CL_TRUE, 0,
+          wD*hD*sizeof(float), (void *)matrixD, 0, NULL, NULL);
 
   // Set the kernel arguments 
   status = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&bufferC);
@@ -144,6 +188,7 @@ int main(int argc, char **argv) {
   status = clSetKernelArg(kernel, 4, sizeof(cl_int), (void *)&hB);
   status = clSetKernelArg(kernel, 5, sizeof(cl_mem), (void *)&bufferA);
   status = clSetKernelArg(kernel, 6, sizeof(cl_mem), (void *)&bufferB);
+  status = clSetKernelArg(kernel, 7, sizeof(cl_mem), (void *)&bufferD);
   checkError(status, "Failed to set kernel arg ");
 
   printf("\nKernel initialization is complete.\n");
@@ -169,13 +214,25 @@ int main(int argc, char **argv) {
          (void *)C, 0, NULL, NULL);
 
   // Verify result 
+  printf("Final result is: ");
   for (int i = 0; i < wC*hC; i++) {
+    //new line for clean formatting
+	  if (i % wC == 0)
+    {
+		  printf("\n");
+    }
     printf ("%f ", C[i]);
   }
   printf("\n");
 
   // Free the resources allocated
   cleanup();
+  
+  //Free the callocs
+  free(matrixA);
+  free(matrixB);
+  free(C);
+  free(matrixD);
 
   return 0;
 }

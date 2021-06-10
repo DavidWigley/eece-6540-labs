@@ -27,7 +27,8 @@ __kernel void simpleMultiply(
     int widthB,
     int heightB,
     __global float *inputA,
-    __global float *inputB)
+    __global float *inputB,
+    __global float *inputD)
 {
     /* get global position in Y direction */
     int row = get_global_id (1);
@@ -41,6 +42,7 @@ __kernel void simpleMultiply(
         sum += inputA[row*widthA + i] * inputB[i*widthB + col];
     }
 
-    outputC[row*widthB + col] = sum;
+    /* Add the element from D to the total sum and store the final result back to Matrix C */
+    outputC[row*widthB + col] = sum + inputD[row*widthB + col];
 }
 
