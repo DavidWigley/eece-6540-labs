@@ -92,10 +92,10 @@ static size_t hB=400;
 static size_t wC = wB;
 static size_t hC = hA;
 static size_t wD = wC;
-static size_t hD = hD;
+static size_t hD = hC;
 
-static const float A_VALUE = 1.0
-static const float B_VALUE = 2.0
+static const float A_VALUE = 1.0;
+static const float B_VALUE = 2.0;
 static const float D_VALUE = 3.0;
 
 
@@ -127,14 +127,14 @@ int main(int argc, char **argv) {
   float *matrixB = (float *) calloc (hB * wB, sizeof(float));
   for (int i = 0; i < hB*wB; i++)
   {
-	  matrixA[i] = B_VALUE;
+	  matrixB[i] = B_VALUE;
   }
   
   //Declare matrix D and set all the elements to D_VALUE
   float *matrixD = (float *) calloc (hD * wD, sizeof(float));
   for (int i = 0; i < hD*wD; i++)
   {
-	  matrixA[i] = D_VALUE;
+	  matrixD[i] = D_VALUE;
   }
   
 
