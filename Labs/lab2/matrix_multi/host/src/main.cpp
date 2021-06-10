@@ -30,7 +30,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 // matrix multiplication example
-// TODO: see Lab2 assignment
+// Modified by David Wigley
 
 #include <assert.h>
 #include <stdio.h>
@@ -70,17 +70,6 @@ static void device_info_uint( cl_device_id device, cl_device_info param, const c
 static void device_info_bool( cl_device_id device, cl_device_info param, const char* name);
 static void device_info_string( cl_device_id device, cl_device_info param, const char* name);
 static void display_device_info( cl_device_id device );
-
-// TODO: you will need to allocate memory dynamically for larger arrays
-static float A[8] = {
-  1.0f,  1.0f,  1.0f,  1.0f,
-  1.0f,  1.0f,  1.0f,  1.0f};
-
-static float B[24] = {
-  2.0f,  2.0f,  2.0f,  2.0f, 2.0f, 2.0f,
-  2.0f,  2.0f,  2.0f,  2.0f, 2.0f, 2.0f,
-  2.0f,  2.0f,  2.0f,  2.0f, 2.0f, 2.0f,
-  2.0f,  2.0f,  2.0f,  2.0f, 2.0f, 2.0f};
 
 // declare matrix sizes
 //width is col
@@ -138,22 +127,17 @@ int main(int argc, char **argv) {
   }
   
 
-  float *C = (float *)calloc (hC * wC ,  sizeof(float));
-  printf("C Values are: ");
+  float *matrixC = (float *)calloc (hC * wC ,  sizeof(float));
+  printf("matrixC Values are: ");
   for (int i = 0; i < wC*hC; i++) {
     //new line for clean formatting
 	  if (i % wC == 0)
     {
 		  printf("\n");
     }
-    printf ("%f ", C[i]);
+    printf ("%f ", matrixC[i]);
   }
   printf("\n");
-
-  // In this example, we assume A, B, C are float arrays which
-  // have been declared and initialized
-  // TODO: change to dynamic memory allocation for larger arrays
-  // TODO: initialize the elements in matrices.
   
   // allocate space for Matrix A on the device 
   cl_mem bufferA = clCreateBuffer(context, CL_MEM_READ_ONLY,
@@ -176,7 +160,7 @@ int main(int argc, char **argv) {
   // allocate space for Matrix D on the device
   cl_mem bufferD = clCreateBuffer(context, CL_MEM_READ_ONLY,
           wD*hD*sizeof(float), NULL, &ret);
-  // copy Matrix B to the device 
+  // copy Matrix D to the device 
   clEnqueueWriteBuffer(queue, bufferD, CL_TRUE, 0,
           wD*hD*sizeof(float), (void *)matrixD, 0, NULL, NULL);
 
@@ -211,7 +195,7 @@ int main(int argc, char **argv) {
 
   // Copy the output data back to the host 
   clEnqueueReadBuffer(queue, bufferC, CL_TRUE, 0, wC*hC*sizeof(float),
-         (void *)C, 0, NULL, NULL);
+         (void *)matrixC, 0, NULL, NULL);
 
   // Verify result 
   printf("Final result is: ");
@@ -221,7 +205,7 @@ int main(int argc, char **argv) {
     {
 		  printf("\n");
     }
-    printf ("%f ", C[i]);
+    printf ("%f ", matrixC[i]);
   }
   printf("\n");
 
@@ -231,7 +215,7 @@ int main(int argc, char **argv) {
   //Free the callocs
   free(matrixA);
   free(matrixB);
-  free(C);
+  free(matrixC);
   free(matrixD);
 
   return 0;
